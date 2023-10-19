@@ -46,3 +46,31 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
           TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/fordemoOnly/_packaging/test-feed/pypi/upload
+
+      - name: Promote Artifact and Manage Feed View
+        env:
+          AZURE_ARTIFACTS_PAT: ${{ secrets.AZURE_ARTIFACTS_PAT }}
+        run: |
+          # Replace these variables with your own values
+          ORGANIZATION="nakesittipong"
+          PROJECT="fordemoOnly"
+          FEED_NAME="test-feed"
+          PACKAGE_NAME="test-package"
+          VIEW_NAME="Prerelease"
+  
+          # Create a JSON payload for promotion
+          payload='{
+            "views": [ "'"$VIEW_NAME"'" ],
+            "reason": "Promotion to '"$VIEW_NAME"' view"
+          }'
+  
+          # Promote the package
+          response=$(curl -X POST -u $AZURE_ARTIFACTS_PAT: -H "Content-Type: application/json" -d "$payload" "https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/packages/packages/$PACKAGE_NAME/promote?api-version=6.0-preview.1")
+  
+          # Check the response
+          if [ "$response" == "" ]; then
+            echo "Package promotion to '$VIEW_NAME' view successful"
+          else
+            echo "Package promotion failed. Error: $response"
+            exit 1
+          fi
