@@ -1,0 +1,47 @@
+name: main_pr_closed
+
+on:
+  pull_request:
+    types: [ closed ]
+    branches: [ main ]
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install pip and twine
+        run: |
+          pip install --upgrade pip
+          pip install twine
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.6.1
+
+      - name: Install dependencies and project
+        run: |
+          poetry install -v --without interactive,docs
+
+      - name: Build package
+        run: |
+          poetry build -f wheel
+
+      - name: Publish package to Azure Artifact
+        run: |
+          poetry run twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.AZURE_ARTIFACTS_PAT }}
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/kBank-MDF-SANDBOX/_packaging/kBank-MDF-SANDBOX/pypi/upload
