@@ -66,14 +66,9 @@ jobs:
   
           # Promote the package
           response=$(
-          curl -X PATCH \
+          curl -kv -X PATCH \
           -H "Content-Type: application/json" \
-          -H "Authorization: Basic BASE64_ENCODED_PAT" \
-          -d '{
-            "name": "New View Name",  // New name for the view
-            "query": "new query criteria",  // New query criteria for the view
-            "isDefault": false  // Update to true if you want to set this as the default view
-              }' \
+          -H "Authorization: Basic ZGUzbHZyZXM2Z3M2YndpY3J2aHpuaGVncGNla3NyZHB2dWdydHpobGl1eXVrN2t6bjdwcQo=" \
           "https://feeds.dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/packaging/Feeds/${FEED_NAME}/views/${VIEW_NAME}?api-version=7.1-preview.1"
           )
           echo "$response"
