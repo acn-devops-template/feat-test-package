@@ -49,15 +49,16 @@ jobs:
 
       - name: Promote Artifact and Manage Feed View
         env:
-          AZURE_ARTIFACTS_PAT: ${{ secrets.AZURE_ARTIFACTS_PAT }}
+          AZURE_ARTIFACTS_PAT: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}
         run: |
-          # Replace these variables with your own values
+          AZURE_ARTIFACTS_PAT2= $(echo "${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" | base64)
           ORGANIZATION="nakesittipong"
           PROJECT="fordemoOnly"
           FEED_NAME="test-feed"
           PACKAGE_NAME="test-package"
           PACKAGE_VERSION="0.1.5"
           VIEW_NAME="Prerelease"
+
 
           URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
@@ -71,7 +72,7 @@ jobs:
   
           # Promote the package
           response=$(
-              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Basic ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d "$PATCH_DATA" "$URL"
+              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Basic $AZURE_ARTIFACTS_PAT2" -d "$PATCH_DATA" "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
