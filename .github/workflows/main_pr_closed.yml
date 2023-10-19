@@ -45,4 +45,4 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
-          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/_packaging/test-feed/pypi/upload
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/fordemoOnly/_packaging/test-feed/pypi/upload
