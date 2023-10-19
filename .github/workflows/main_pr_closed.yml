@@ -69,7 +69,7 @@ jobs:
   
           # Promote the package
           response=$(
-              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Basic ZGUzbHZyZXM2Z3M2YndpY3J2aHpuaGVncGNla3NyZHB2dWdydHpobGl1eXVrN2t6bjdwcQo=" -d "$PATCH_DATA" "$URL"
+              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Basic __token__:ZGUzbHZyZXM2Z3M2YndpY3J2aHpuaGVncGNla3NyZHB2dWdydHpobGl1eXVrN2t6bjdwcQo=" -d "$PATCH_DATA" "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
