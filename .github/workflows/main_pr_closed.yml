@@ -65,7 +65,7 @@ jobs:
           }'
   
           # Promote the package
-          response=$(curl -X POST -u $AZURE_ARTIFACTS_PAT: -H "Content-Type: application/json" -d "$payload" "https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/packages/packages/$PACKAGE_NAME/promote?api-version=6.0-preview.1")
+          response=$(curl -X POST -u $MY_AZURE_ARTIFACTS_PAT: -H "Content-Type: application/json" -d "$payload" "https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/packages/packages/$PACKAGE_NAME/promote?api-version=6.0-preview.1")
   
           # Check the response
           if [ "$response" == "" ]; then
