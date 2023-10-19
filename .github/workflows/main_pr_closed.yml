@@ -65,7 +65,17 @@ jobs:
           }'
   
           # Promote the package
-          response=$(curl -X POST -u $MY_AZURE_ARTIFACTS_PAT: -H "Content-Type: application/json" -d "$payload" "https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/packages/packages/$PACKAGE_NAME/promote?api-version=6.0-preview.1")
+          response=$(
+          curl -X PATCH \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Basic BASE64_ENCODED_PAT" \
+          -d '{
+            "name": "New View Name",  // New name for the view
+            "query": "new query criteria",  // New query criteria for the view
+            "isDefault": false  // Update to true if you want to set this as the default view
+              }' \
+          "https://feeds.dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/packaging/Feeds/${FEED_NAME}/views/${VIEW_NAME}?api-version=7.1-preview.1"
+          )
           echo "$response"
 
           # Check the response
