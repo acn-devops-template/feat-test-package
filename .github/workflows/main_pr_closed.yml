@@ -1,9 +1,10 @@
 name: main_pr_closed
 
 on:
-  pull_request:
-    types: [ closed ]
-    branches: [ main ]
+  # pull_request:
+  #   types: [ closed ]
+  #   branches: [ main ]
+  
 
 jobs:
   build:
@@ -43,5 +44,5 @@ jobs:
           poetry run twine upload dist/*
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}
+          TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
           TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/kBank-MDF-SANDBOX/_packaging/test-feed/pypi/upload
