@@ -56,23 +56,23 @@ jobs:
           PROJECT="fordemoOnly"
           FEED_NAME="test-feed"
           PACKAGE_NAME="test-package"
+          PACKAGE_VERSION="0.1.5"
           VIEW_NAME="Prerelease"
+
+          URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
-          # Create a JSON payload for promotion
-          payload='{
-            "views": [ "'"$VIEW_NAME"'" ],
-            "reason": "Promotion to '"$VIEW_NAME"' view"
-          }'
+          PATCH_DATA='[
+          {
+            "op": "add",
+            "path": "/views/-",
+            "value": "'$VIEW_NAME'"
+          }
+          ]'
   
           # Promote the package
           response=$(
-          curl -kv -X PATCH \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Basic ZGUzbHZyZXM2Z3M2YndpY3J2aHpuaGVncGNla3NyZHB2dWdydHpobGl1eXVrN2t6bjdwcQo=" \
-          "https://feeds.dev.azure.com/${ORGANIZATION}/${PROJECT}/_apis/packaging/Feeds/${FEED_NAME}/views/${VIEW_NAME}?api-version=7.1-preview.1"
+              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Basic ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d "$PATCH_DATA" "$URL"
           )
-          echo "$response"
-
           # Check the response
           if [ "$response" == "" ]; then
             echo "Package promotion to '$VIEW_NAME' view successful"
