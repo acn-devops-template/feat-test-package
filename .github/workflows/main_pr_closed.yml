@@ -48,8 +48,6 @@ jobs:
           TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/fordemoOnly/_packaging/test-feed/pypi/upload
 
       - name: Promote Artifact and Manage Feed View
-        env:
-          AZURE_ARTIFACTS_PAT: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}
         run: |
           ORGANIZATION="nakesittipong"
           PROJECT="fordemoOnly"
