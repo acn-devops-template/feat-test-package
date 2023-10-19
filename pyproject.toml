@@ -6,7 +6,7 @@ authors = ["DataX Analytics Machine Learning Engineering <analytics.mle@data-x.a
 		   "DataX Analytics Products DataHub <analytics.products.datahub@data-x.ai>"]
 readme = "README.md"
 packages = [{ include = "datax", from = "src" }]
-
+ 
 [tool.poetry.dependencies]
 python = "^3.9" 
 pydantic = { version = "^1.10.2" }
