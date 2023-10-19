@@ -51,7 +51,6 @@ jobs:
         env:
           AZURE_ARTIFACTS_PAT: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}
         run: |
-          AZURE_ARTIFACTS_PAT2= $(echo "${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" | base64)
           ORGANIZATION="nakesittipong"
           PROJECT="fordemoOnly"
           FEED_NAME="test-feed"
