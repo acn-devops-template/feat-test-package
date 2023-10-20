@@ -71,7 +71,7 @@ jobs:
   
           # Promote the package
           response=$(
-              curl -vX PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d $PATCH_DATA "$URL"
+              curl -vX PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
