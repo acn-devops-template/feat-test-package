@@ -55,6 +55,7 @@ jobs:
           PACKAGE_NAME="test-package"
           PACKAGE_VERSION=$(awk -F ' = ' '$1 == "version" { gsub(/"/, "", $2); print $2 }' pyproject.toml)
           VIEW_NAME="Prerelease"
+          echo "This is version ::::: $PACKAGE_VERSION"
 
           URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
@@ -69,11 +70,11 @@ jobs:
   
           # Promote the package
           response=$(
-              curl -kv -X PATCH -H "Content-Type: application/json" -H -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
+              curl -kv -X PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
-            echo "Package promotion to '$VIEW_NAME' view successful"
+            echo "$ >>>> PACKAGE_NAME [$PACKAGE_VERSION] has been promoted to '$VIEW_NAME' view!"
           else
             echo "Package promotion failed. Error: $response"
             exit 1
