@@ -60,18 +60,16 @@ jobs:
 
           URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
-          PATCH_DATA='
-          {
-            "views": {
-              "op": "add",
-              "path": "/views/-",
-              "value": "$VIEW_NAME"
-            }
-          }'
-  
+          PATCH_DATA="{
+            \"views\": {
+                \"op\": \"add\",
+                \"path\": \"/views/-\",
+                \"value\": \"Prerelease\"
+                }
+          }"
           # Promote the package
           response=$(
-              curl -vX PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
+              curl -vX PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d "$PATCH_DATA" "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
