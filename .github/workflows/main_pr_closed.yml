@@ -47,13 +47,16 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
           TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/fordemoOnly/_packaging/test-feed/pypi/upload
 
+      - name: Extract app version
+        run: APP_VERSION=$(awk -F ' = ' '$1 == "version" { gsub(/"/, "", $2); print $2 }' pyproject.toml)
+        
       - name: Promote Feed View to @Prerelease
         env:
           ORGANIZATION: "nakesittipong"
           PROJECT: "fordemoOnly"
           FEED_NAME: "test-feed"
           PACKAGE_NAME: "test-package"
-          PACKAGE_VERSION: $(awk -F ' = ' '$1 == "version" { gsub(/"/, "", $2); print $2 }' pyproject.toml)
+          PACKAGE_VERSION: $APP_VERSION
           VIEW_NAME: "Prerelease"
           
         run: |
