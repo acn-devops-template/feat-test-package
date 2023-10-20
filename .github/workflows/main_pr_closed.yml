@@ -47,29 +47,29 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
           TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/nakesittipong/fordemoOnly/_packaging/test-feed/pypi/upload
 
-      - name: Promote Artifact and Manage Feed View
+      - name: Promote Feed View to @Prerelease
         run: |
           ORGANIZATION="nakesittipong"
           PROJECT="fordemoOnly"
           FEED_NAME="test-feed"
           PACKAGE_NAME="test-package"
-          PACKAGE_VERSION="0.1.5"
+          PACKAGE_VERSION=$(awk -F ' = ' '$1 == "version" { gsub(/"/, "", $2); print $2 }' pyproject.toml)
           VIEW_NAME="Prerelease"
-
 
           URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
           PATCH_DATA='[
           {
-            "op": "add",
-            "path": "/views/-",
-            "value": "'$VIEW_NAME'"
-          }
+            "views": {
+              "op": "add",
+              "path": "/views/-",
+              "value": "$VIEW_NAME"
+            }
           ]'
   
           # Promote the package
           response=$(
-              curl -kv -X PATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Bearer ${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d "$PATCH_DATA" "$URL"
+              curl -kv -X PATCH -H "Content-Type: application/json" -H -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
