@@ -55,22 +55,22 @@ jobs:
           PACKAGE_NAME="test-package"
           PACKAGE_VERSION=$(awk -F ' = ' '$1 == "version" { gsub(/"/, "", $2); print $2 }' pyproject.toml)
           VIEW_NAME="Prerelease"
-          echo "This is version ::::: $PACKAGE_VERSION"
+          
+          echo "Promote Package Version ::::: $PACKAGE_VERSION"
 
           URL="https://pkgs.dev.azure.com/$ORGANIZATION/$PROJECT/_apis/packaging/feeds/$FEED_NAME/pypi/packages/$PACKAGE_NAME/versions/$PACKAGE_VERSION?api-version=7.1-preview.1"
   
-          PATCH_DATA='[
+          PATCH_DATA='
           {
             "views": {
               "op": "add",
               "path": "/views/-",
               "value": "$VIEW_NAME"
-            }
-          ]'
+          }'
   
           # Promote the package
           response=$(
-              curl -kv -X PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d '$PATCH_DATA' "$URL"
+              curl -v -X PATCH -H "Content-Type: application/json" -u "__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}" -d $PATCH_DATA "$URL"
           )
           # Check the response
           if [ "$response" == "" ]; then
