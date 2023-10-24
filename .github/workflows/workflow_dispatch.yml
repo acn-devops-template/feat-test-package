@@ -23,7 +23,7 @@ jobs:
           pip install twine
 
       - name: Install poetry
-        uses: ./install-poetry
+        uses: ./inst-poetry
         with:
           version: 1.6.1
 
