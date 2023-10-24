@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: get pull request number
-      run: echo "{{ github.event.number }}"
+      run: echo "${{ github.event.number }}"
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
