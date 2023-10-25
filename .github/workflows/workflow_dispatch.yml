@@ -11,6 +11,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: get github
+        run: |
+          PR_API_URL="https://api.github.com/repos/feat-test-package/pulls/39"
+          curl -s -H "Authorization: Basic __token__:${{ secrets.GITHUB_TOKEN }}" "$PR_API_URL"
 
       - name: Set up Python
         uses: actions/setup-python@v4
