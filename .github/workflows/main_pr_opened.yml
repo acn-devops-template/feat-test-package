@@ -47,7 +47,7 @@ jobs:
           # echo "description ::::: ${{ env.description }}
           
           curl -vX POST \
-          -u '__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}' \
+          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
           -H 'Content-Type: application/json-patch+json' \
           -d '[
               {
