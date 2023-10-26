@@ -86,7 +86,7 @@ jobs:
 
           # get the id of work item that matches the tittle
           id=$(curl -w "%{http_code}\n" -X POST \
-          -u '__token__:$AZURE_PAT' \
+          -u '__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }} ' \
           -H 'Content-Type: application/json' \
           -d '{
             "query": "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = '\''issue'\'' AND [System.Title] CONTAINS '\''${{ env.title }}'\'' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
