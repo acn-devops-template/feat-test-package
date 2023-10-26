@@ -11,6 +11,7 @@ jobs:
     env:
       ORGANIZATION: "nakesittipong"
       PROJECT: "fordemoOnly"
+      AZURE_PAT: ${{ secrets.MY_AZURE_ARTIFACTS_PAT }} 
     steps:
       - name: get PR values
         run: |
@@ -40,7 +41,7 @@ jobs:
           # echo "description ::::: ${{ env.description }}
           
           curl -X POST \
-          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
+          -u '__token__:$AZURE_PAT' \
           -H 'Content-Type: application/json-patch+json' \
           -d '[
               {
@@ -79,7 +80,7 @@ jobs:
 
           # get the id of work item that matches the tittle
           id=$(curl -w "%{http_code}\n" -X POST \
-          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
+          -u '__token__:$AZURE_PAT' \
           -H 'Content-Type: application/json' \
           -d '{
             "query": "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = '\''issue'\'' AND [System.Title] CONTAINS '\''${{ env.title }}'\'' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
