@@ -47,7 +47,7 @@ jobs:
           # echo "description ::::: ${{ env.description }}
           
           curl -vX POST \
-          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
+          -u '__token__:$AZURE_PAT' \
           -H 'Content-Type: application/json-patch+json' \
           -d '[
               {
@@ -109,28 +109,28 @@ jobs:
           "https://api.github.com/repos/JustMeandMyCodes/feat-test-package/pulls/4" \
           -d '{"title":"AB#${{ env.workitem_id }} ${{ env.title }}"}'
 
-  analyze:
-    name: Analyze
-    # Runner size impacts CodeQL analysis time. To learn more, please see:
-    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
-    #   - https://gh.io/supported-runners-and-hardware-resources
-    #   - https://gh.io/using-larger-runners
-    # Consider using larger runners for possible analysis time improvements.
-    runs-on: ubuntu-20.04
-    timeout-minutes: 360
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+  # analyze:
+  #   name: Analyze
+  #   # Runner size impacts CodeQL analysis time. To learn more, please see:
+  #   #   - https://gh.io/recommended-hardware-resources-for-running-codeql
+  #   #   - https://gh.io/supported-runners-and-hardware-resources
+  #   #   - https://gh.io/using-larger-runners
+  #   # Consider using larger runners for possible analysis time improvements.
+  #   runs-on: ubuntu-20.04
+  #   timeout-minutes: 360
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'python' ]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       language: [ 'python' ]
 
-    steps:
-    - name: get pull request number
-      run: echo "{{ github.event.number }}"
+  #   steps:
+  #   - name: get pull request number
+  #     run: echo "{{ github.event.number }}"
     # - name: Checkout repository
     #   uses: actions/checkout@v3
     #   with:
