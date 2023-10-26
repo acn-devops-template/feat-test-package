@@ -21,11 +21,11 @@ jobs:
           OWNER: "acn-devops-template"
           REPO: "feat-test-package"
         run: |
-          curl -Lv \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer  ${{ secrets.GITHUB_TOKEN }}" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "https://api.github.com/repos/$OWNER/$REPO/pulls/${{ github.event.number }}" 
+          # curl -Lv \
+          # -H "Accept: application/vnd.github+json" \
+          # -H "Authorization: Bearer  ${{ secrets.GITHUB_TOKEN }}" \
+          # -H "X-GitHub-Api-Version: 2022-11-28" \
+          # "https://api.github.com/repos/$OWNER/$REPO/pulls/${{ github.event.number }}" 
 
           response=$(curl -Lv \
           -H "Accept: application/vnd.github+json" \
@@ -47,7 +47,7 @@ jobs:
           # echo "description ::::: ${{ env.description }}
           
           curl -vX POST \
-          -u '__token__:$AZURE_PAT' \
+          -u '__token__:${{ secrets.MY_AZURE_ARTIFACTS_PAT }}' \
           -H 'Content-Type: application/json-patch+json' \
           -d '[
               {
