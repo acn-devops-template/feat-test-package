@@ -27,8 +27,19 @@ jobs:
             -H "Authorization: Bearer  ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/$OWNER/$REPO/pulls/${{ github.event.number }}")
-            
+
+            echo "merged_at=$(echo "$response" | jq -r '.merged_at')" >> $GITHUB_ENV
             echo "user_merged=$(echo "$response" | jq -r '.merged_by.login')" >> $GITHUB_ENV
+
+            title_temp=$(echo "$response" | jq -r '.title')
+            echo "title=${title_temp#* }" >> $GITHUB_ENV
+            
+        - name: get work item ID
+          run: |
+             echo "merge_at ::::: ${{ env.merged_at }}"
+             echo "user_merged::::: ${{ env.user_merged }}"
+             echo "tittle ::::: ${{ env.title }}"
+            
             
   # build:
   #   if: github.event.pull_request.merged == true
