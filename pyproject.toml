@@ -1,4 +1,4 @@
-[tool.poetry] 
+[tool.poetry]  
 name = "test-package"
 version = "0.3.6"
 description = "common lib for deployment-related"
