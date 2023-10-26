@@ -6,6 +6,102 @@ on:
     branches: [ main ]
 
 jobs:
+  azure_baord_item:
+    runs-on: ubuntu-20.04
+    env:
+      ORGANIZATION: "nakesittipong"
+      PROJECT: "fordemoOnly"
+    steps:
+      - name: get PR values
+        run: |
+          curl -Lv \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer  ${{ secrets.GITHUB_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/JustMeandMyCodes/feat-test-package/pulls/4" 
+
+          response=$(curl -Lv \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer  ${{ secrets.GITHUB_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/JustMeandMyCodes/feat-test-package/pulls/4")
+          
+          echo "created_at=$(echo "$response" | jq -r '.created_at')" >> $GITHUB_ENV
+          echo "user_created=$(echo "$response" | jq -r '.user.login')" >> $GITHUB_ENV
+          echo "title=$(echo "$response" | jq -r '.title')" >> $GITHUB_ENV
+          # echo "description=$(echo "$response" | jq -r '.body')" >> $GITHUB_ENV
+
+      - name: create PR work item on AB
+        run: | 
+          
+          echo "created time ::::: ${{ env.created_at }}"
+          echo "user created ::::: ${{ env.user_created }}"
+          echo "PR tittle ::::: ${{ env.title }}"
+          # echo "description ::::: ${{ env.description }}
+          
+          curl -X POST \
+          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
+          -H 'Content-Type: application/json-patch+json' \
+          -d '[
+              {
+                  "op": "add",
+                  "path": "/fields/System.Title",
+                  "value": "PR -  ${{ env.title }}"
+              },
+              {
+                  "op": "add",
+                  "path": "/fields/System.Description",
+                  "from": null,
+                  "value": "เช็คที:b"
+              },
+              {
+                  "op": "add",
+                  "path": "/fields/System.History",
+                  "from": null,
+                  "value": "Pull Request Opened by ${{ env.user_created }}] at ${{ env.created_at }}"
+              },
+              {
+                  "op": "add",
+                  "path": "/fields/System.AssignedTo",
+                  "value": "n.akesittipong"
+              },
+              {
+                  "op": "add",
+                  "path": "/fields/System.AreaPath",
+                  "from": null,
+                  "value": "fordemoOnly\\test-board"
+              }
+          ]' \
+          "https://dev.azure.com/$ORGANIZATION/$PROJECT/_apis/wit/workitems/\${issue}?api-version=7.1-preview.3" 
+          
+      - name: get work item ID
+        run: | 
+
+          # get the id of work item that matches the tittle
+          id=$(curl -w "%{http_code}\n" -X POST \
+          -u '__token__:ow76vkhxa5eqbhysnk7egp5bzb7nqgh5owbxljzurxjyxt4gcora' \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "query": "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = '\''issue'\'' AND [System.Title] CONTAINS '\''${{ env.title }}'\'' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+              }
+          }' \
+          "https://dev.azure.com/$ORGANIZATION/$PROJECT/_apis/wit/wiql?api-version=5.1" | jq -r 'try .workItems[0].id catch ""')
+          echo "workitem_id :::: $id"
+          echo "workitem_id=$id" >> $GITHUB_ENV
+          echo "workitem_id = ${{ env.workitem_id }}"
+
+          
+      - name: create work-item & rename pull-request format
+        run: |
+          echo "workitem_id :::: ${{ env.workitem_id }}"
+          curl -L \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/JustMeandMyCodes/feat-test-package/pulls/4" \
+          -d '{"title":"AB#${{ env.workitem_id }} ${{ env.title }}"}'
+
   analyze:
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
@@ -28,56 +124,56 @@ jobs:
     steps:
     - name: get pull request number
       run: echo "{{ github.event.number }}"
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+    # - name: Checkout repository
+    #   uses: actions/checkout@v3
+    #   with:
+    #     fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
+    # - name: Set up Python
+    #   uses: actions/setup-python@v4
+    #   with:
+    #     python-version: 3.9
 
-    - name: Install pip
-      run: |
-        pip install --upgrade pip
+    # - name: Install pip
+    #   run: |
+    #     pip install --upgrade pip
 
-    - name: Install poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.6.1
+    # - name: Install poetry
+    #   uses: snok/install-poetry@v1
+    #   with:
+    #     version: 1.6.1
 
-    - name: Install dependencies and project
-      run: |
-        poetry install -v --without interactive,docs
+    # - name: Install dependencies and project
+    #   run: |
+    #     poetry install -v --without interactive,docs
 
-    - name: Linting
-      run: |
-        poetry run pre-commit run --all-files
+    # - name: Linting
+    #   run: |
+    #     poetry run pre-commit run --all-files
 
-    - name: Run unit tests
-      run: |
-        echo "Launching unit tests"
-        poetry run pytest tests/
+    # - name: Run unit tests
+    #   run: |
+    #     echo "Launching unit tests"
+    #     poetry run pytest tests/
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+    # # Initializes the CodeQL tools for scanning.
+    # - name: Initialize CodeQL
+    #   uses: github/codeql-action/init@v2
+    #   with:
+    #     languages: ${{ matrix.language }}
+    #     # If you wish to specify custom queries, you can do so here or in a config file.
+    #     # By default, queries listed here will override any specified in a config file.
+    #     # Prefix the list here with "+" to use these queries and those in the config file.
 
-        # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+    #     # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+    #     # queries: security-extended,security-and-quality
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+    # # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
+    # # If this step fails, then you should remove it and run the build manually (see below)
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v2
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+    # - name: Perform CodeQL Analysis
+    #   uses: github/codeql-action/analyze@v2
+    #   with:
+    #     category: "/language:${{matrix.language}}"
